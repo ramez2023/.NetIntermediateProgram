@@ -28,7 +28,7 @@ namespace MultiThreading.Task6.Continuation
             //OptionA();
             //OptionB();
             //OptionC();
-            await OptionDAsync();
+            await OptionD();
 
 
 
@@ -77,8 +77,8 @@ namespace MultiThreading.Task6.Continuation
                 // Handle the exception from the parent task
             }
         }
-    
-    
+
+
         static void OptionC()
         {
             Task parentTask = Task.Run(() =>
@@ -106,35 +106,34 @@ namespace MultiThreading.Task6.Continuation
             }
         }
 
-        static async Task OptionDAsync()
+        static async Task OptionD()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
             CancellationToken token = cts.Token;
+            cts.CancelAfter(1000);
 
             Task parentTask = Task.Run(() =>
             {
                 // Simulate some work
                 Thread.Sleep(2000); // Sleep for 2 seconds
-                cts.Cancel();
-            });
+                token.ThrowIfCancellationRequested();
 
-            try
-            {
-                await parentTask;
-            }
-            catch (TaskCanceledException)
-            {
-                Console.WriteLine("Parent Task was canceled.");
-            }
+            }, token);
 
-            Task continuationTask = Task.Factory.StartNew(() =>
-            {
-                Console.WriteLine("Continuation Task executed outside of the thread pool because the parent task was canceled.");
-            });
 
-            await continuationTask;
+            var child = parentTask.ContinueWith(task =>
+            {
+                if (task.IsCanceled)
+                {
+                    Console.WriteLine($"Continuation Task (Case D) (Thread ID - {Thread.CurrentThread.ManagedThreadId}) executed on the same thread because the parent task failed.");
+                    Console.WriteLine($"IsThreadPoolThread {Thread.CurrentThread.IsThreadPoolThread}");
+                }
+
+            }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.LongRunning);
+
+
+            await child;
         }
-    
-    
+
     }
 }

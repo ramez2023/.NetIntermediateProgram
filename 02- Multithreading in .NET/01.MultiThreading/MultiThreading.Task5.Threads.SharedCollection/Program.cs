@@ -6,6 +6,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MultiThreading.Task5.Threads.SharedCollection
@@ -13,7 +14,9 @@ namespace MultiThreading.Task5.Threads.SharedCollection
     class Program
     {
         private static List<int> sharedCollection = new List<int>();
-        private static object lockObject = new object();
+
+        static AutoResetEvent writingLock = new AutoResetEvent(true);
+        static AutoResetEvent readingLock = new AutoResetEvent(false);
 
         static async Task Main(string[] args)
         {
@@ -30,38 +33,48 @@ namespace MultiThreading.Task5.Threads.SharedCollection
             Console.ReadLine();
         }
 
-        static async Task AddToCollectionAsync()
+        static Task AddToCollectionAsync()
         {
-            for (int i = 1; i <= 10; i++)
+            return Task.Run(() =>
             {
-                AddToCollection(i);
-                await Task.Delay(100); // Simulate some work
-            }
+                for (int i = 1; i <= 10; i++)
+                {
+                    writingLock.WaitOne();
+                    readingLock.Reset();
+
+                    AddToCollection(i);
+                    Console.WriteLine($"Element is added {i}");
+
+                    readingLock.Set();
+
+                }
+            });
         }
 
-        static async Task PrintCollectionAsync()
+        static Task PrintCollectionAsync()
         {
-            for (int i = 0; i < 10; i++)
+            return Task.Run(() =>
             {
-                PrintCollection();
-                await Task.Delay(100); // Simulate some work
-            }
+                while (true)
+                {
+                    readingLock.WaitOne();
+                    writingLock.Reset();
+
+                    PrintCollection();
+
+                    writingLock.Set();
+                }
+            });
         }
 
         static void AddToCollection(int value)
         {
-            lock (lockObject)
-            {
-                sharedCollection.Add(value);
-            }
+            sharedCollection.Add(value);
         }
 
         static void PrintCollection()
         {
-            lock (lockObject)
-            {
-                Console.WriteLine("Elements in the collection: " + string.Join(", ", sharedCollection));
-            }
+            Console.WriteLine("Elements in the collection: " + string.Join(", ", sharedCollection));
         }
     }
 }
