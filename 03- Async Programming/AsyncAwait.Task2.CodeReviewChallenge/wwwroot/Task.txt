@@ -1,0 +1,34 @@
+﻿Task 2. ASP MVC challenge (AsyncAwait.Task2.CodeReviewChallenge.csproj): 
+
+Task:
+
+Please perform code review of the provided ASP.NET Core application. 
+Pay attention to async operations usage issues.
+
+About application
+Web app contains 3 pages, which could be navigated from the main menu: Home, Privacy, Help. 
+Besides that, each page collects statistics (how many times this page was visited).
+
+Probably, the navigations counting code is not optimal and causes the pages loading slowly.
+
+
+What you need to do:
+
+1)  Review application code AsyncAwait.CodeReviewChallenge and paying attention to the wrong async code usage. 
+    Provide your ideas how these code issues could be resolved. 
+2)  Improve the code according to your proposals. 
+    Verify that application works stable. (Good idea here is to make your changes in a separate branch and then compare both implementations).
+
+This solution also contains a project named ‘CloudServices’. 
+This app emulates multiple calls to the third-party services. 
+As it is a third-party library,  you shouldn’t change this code. 
+All your changes should be made in AsyncAwait.CodeReviewChallenge project.
+Discuss your ideas and results with your mentor. Be ready to describe how async code works in depth.
+
+
+
+Modifications:
+- ManualAssistant class
+- StatisticMiddleware class
+- HomeController class 
+- 
