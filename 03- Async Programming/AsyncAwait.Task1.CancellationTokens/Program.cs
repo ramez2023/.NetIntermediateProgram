@@ -53,29 +53,27 @@ internal class Program
 
     private static void CalculateSum(int n)
     {
-        lock (LockObject)
+        if (_cts.Token.CanBeCanceled)
         {
-            if (_cts.Token.CanBeCanceled)
-            {
-                _cts.Cancel();
-                _cts = new CancellationTokenSource();
-            }
-
-            Task.Run(async () =>
-            {
-                Console.WriteLine($"The task for {n} started... Enter N to cancel the request:");
-
-                try
-                {
-                    long sum = await Calculator.CalculateAsync(n, _cts.Token);
-                    Console.WriteLine($"Sum for {n} = {sum}.");
-                    Console.WriteLine();
-                }
-                catch (OperationCanceledException)
-                {
-                    Console.WriteLine($"Sum for {n} cancelled...");
-                }
-            });
+            _cts.Cancel();
+            _cts = new CancellationTokenSource();
         }
+
+
+        Task.Run(async () =>
+        {
+            Console.WriteLine($"The task for {n} started... Enter N to cancel the request:");
+
+            try
+            {
+                long sum = await Calculator.CalculateAsync(n, _cts.Token);
+                Console.WriteLine($"Sum for {n} = {sum}.");
+                Console.WriteLine();
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine($"Sum for {n} cancelled...");
+            }
+        });
     }
 }

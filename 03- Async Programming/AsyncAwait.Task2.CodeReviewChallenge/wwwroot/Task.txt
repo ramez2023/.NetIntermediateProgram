@@ -27,8 +27,11 @@ Discuss your ideas and results with your mentor. Be ready to describe how async 
 
 
 
-Modifications:
-- ManualAssistant class
-- StatisticMiddleware class
-- HomeController class 
-- 
+Modifications classes:
+- ManualAssistant 
+- StatisticMiddleware
+- HomeController
+- PrivacyDataService
+
+
+Good URL: https://medium.com/rubrikkgroup/understanding-async-avoiding-deadlocks-e41f8f2c6f5d

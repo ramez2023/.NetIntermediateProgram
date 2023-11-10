@@ -24,28 +24,36 @@ public class StatisticMiddleware
         string path = context.Request.Path;
 
         /*
+
+        Old Code:
+
         var staticRegTask = Task.Run(
             () => _statisticService.RegisterVisitAsync(path)
                 .ConfigureAwait(false)
-                .GetAwaiter().OnCompleted(UpdateHeadersAsync));
+                .GetAwaiter().OnCompleted(UpdateHeaders));
         Console.WriteLine(staticRegTask.Status); // just for debugging purposes
 
-        async Task UpdateHeadersAsync()
+        void UpdateHeaders()
         {
             context.Response.Headers.Add(
                 CustomHttpHeaders.TotalPageVisits,
-                await _statisticService.GetVisitsCountAsync(path).GetAwaiter().ToString());
+                _statisticService.GetVisitsCountAsync(path).GetAwaiter().GetResult().ToString());
         }
+
+        Thread.Sleep(3000); // without this the statistic counter does not work
+
+
+
+        .GetAwaiter().GetResult() >> Blocking the calling thread 
+        .ConfigureAwait(false) >>  Any code that knows it’s running under ASP.NET Core does not need to explicitly avoid its context.
+        No SynchronizationContext in ASP.NET Core.
         */
 
-        var staticRegTask = _statisticService.RegisterVisitAsync(path);
-        Console.WriteLine(staticRegTask.Status); // just for debugging purposes
-        await staticRegTask.ConfigureAwait(false);
+        await _statisticService.RegisterVisitAsync(path);
+        var visitsCount = await _statisticService.GetVisitsCountAsync(path);
 
-        var visitsCount = await _statisticService.GetVisitsCountAsync(path).ConfigureAwait(false);
+
         context.Response.Headers.Add(CustomHttpHeaders.TotalPageVisits, visitsCount.ToString());
-
-        // await Task.Delay(3000); 
 
         await _next(context);
     }
