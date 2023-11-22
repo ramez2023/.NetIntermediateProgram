@@ -37,10 +37,9 @@ class Program
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += async (model, @event) =>
             {
-                var fileNameHeader = Encoding.UTF8.GetString((byte[])@event.BasicProperties.Headers["fileName"]);
-                var fileExtensionHeader = Encoding.UTF8.GetString((byte[])@event.BasicProperties.Headers["fileExtension"]);
 
-                await StoreMessageLocallyAsync(@event.Body.ToArray(), fileNameHeader, fileExtensionHeader);
+                await StoreChunksLocallyAsync(@event.Body.ToArray(), @event.BasicProperties.Headers);
+                // await StoreMessageLocallyAsync(@event.Body.ToArray(), @event.BasicProperties.Headers);
             };
 
             // Start consuming messages
@@ -51,13 +50,38 @@ class Program
         }
     }
 
-    static async Task StoreMessageLocallyAsync(byte[] fileBytes, string fileName, string fileExtension)
+    static async Task StoreMessageLocallyAsync(byte[] fileBytes, IDictionary<string, object> headers)
     {
         string localFolder = FilePathManager.GetLocalFolderPathForDataOutput();
-        string filePath = Path.Combine(localFolder, $"{fileName}_{DateTime.Now:yyyyMMddHHmmss}{fileExtension}");
+        var fileName = Encoding.UTF8.GetString((byte[])headers["fileName"]);
+        var fileExtension = Encoding.UTF8.GetString((byte[])headers["fileExtension"]);
+        string filePath = Path.Combine(localFolder, $"{fileName}{fileExtension}");
 
-        await File.WriteAllBytesAsync(filePath, fileBytes);
+        using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            await fileStream.WriteAsync(fileBytes, 0, fileBytes.Length);
+        }
 
         Console.WriteLine($"Message stored locally: {filePath}");
+    }
+
+    static async Task StoreChunksLocallyAsync(byte[] chunk, IDictionary<string, object> headers)
+    {
+        string localFolder = FilePathManager.GetLocalFolderPathForDataOutput();
+        var fileName = Encoding.UTF8.GetString((byte[])headers["fileName"]);
+        var fileExtension = Encoding.UTF8.GetString((byte[])headers["fileExtension"]);
+        string filePath = Path.Combine(localFolder, $"{fileName}{fileExtension}");
+        
+        var chunkNumber = headers["chunkNumber"];
+
+        using (MemoryStream stream = new MemoryStream(chunk))
+        {
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+        }
+
+        Console.WriteLine($"Chunk {chunkNumber} stored locally: {fileName}");
     }
 }
