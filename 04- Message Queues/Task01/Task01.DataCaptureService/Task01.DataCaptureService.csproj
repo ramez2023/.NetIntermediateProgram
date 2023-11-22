@@ -11,5 +11,9 @@
 	  <ProjectReference Include="..\Task01.Common\Task01.Common.csproj" />
 	</ItemGroup>
 	
+	<ItemGroup>
+	  <Folder Include="DataInput\" />
+	</ItemGroup>
+	
 	
 </Project>
