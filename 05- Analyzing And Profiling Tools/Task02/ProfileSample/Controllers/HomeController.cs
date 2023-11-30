@@ -11,7 +11,7 @@ namespace ProfileSample.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult IndexOld()
         {
             var context = new ProfileSampleEntities();
 
@@ -31,6 +31,22 @@ namespace ProfileSample.Controllers
 
                 model.Add(obj);
             } 
+
+            return View(model);
+        }
+
+        public ActionResult Index()
+        {
+            var context = new ProfileSampleEntities();
+
+            var model = context.ImgSources
+                .Take(20)
+                .Select(item => new ImageModel
+                {
+                    Name = item.Name,
+                    Data = item.Data
+                })
+                .ToList();
 
             return View(model);
         }
