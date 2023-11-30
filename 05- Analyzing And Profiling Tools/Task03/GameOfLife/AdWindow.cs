@@ -28,7 +28,7 @@ namespace GameOfLife
             MouseDown += OnClick;
             
             imgNmb = rnd.Next(1, 3);
-            ChangeAds(this, new EventArgs());
+            ChangeAds(this, EventArgs.Empty);
 
             // Run the timer that changes the ad's image 
             adTimer = new DispatcherTimer();
@@ -62,22 +62,19 @@ namespace GameOfLife
             switch (imgNmb)
             {
                 case 1:
-                    myBrush.ImageSource =
-                        new BitmapImage(new Uri("ad1.jpg", UriKind.Relative));
+                    myBrush.ImageSource = new BitmapImage(new Uri("ad1.jpg", UriKind.Relative));
                     Background = myBrush;
                     link = "http://example.com";
                     imgNmb++;
                     break;
                 case 2:
-                    myBrush.ImageSource =
-                        new BitmapImage(new Uri("ad2.jpg", UriKind.Relative));
+                    myBrush.ImageSource = new BitmapImage(new Uri("ad2.jpg", UriKind.Relative));
                     Background = myBrush;
                     link = "http://example.com";
                     imgNmb++;
                     break;
                 case 3:
-                    myBrush.ImageSource =
-                        new BitmapImage(new Uri("ad3.jpg", UriKind.Relative));
+                    myBrush.ImageSource = new BitmapImage(new Uri("ad3.jpg", UriKind.Relative));
                     Background = myBrush;
                     link = "http://example.com";
                     imgNmb = 1;
