@@ -4,7 +4,7 @@ using System.Windows.Shapes;
 
 namespace GameOfLife
 {
-    class Cell
+    public class Cell
     {
         public int PositionX { get; set; }
         public int PositionY { get; set; }

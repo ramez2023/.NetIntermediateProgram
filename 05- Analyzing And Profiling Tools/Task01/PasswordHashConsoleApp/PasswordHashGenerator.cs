@@ -33,20 +33,21 @@ internal class PasswordHashGenerator
     public static string GeneratePasswordHashUsingSaltOptimized(string passwordText, byte[] salt)
     {
         const int iterate = 10000;
-        const int derivedKeyLength = 20;
-        const int saltLength = 16;
 
-        using (var pbkdf2 = new Rfc2898DeriveBytes(passwordText, salt, iterate))
+        Span<byte> hash = stackalloc byte[20];
+        Rfc2898DeriveBytes.Pbkdf2(passwordText.AsSpan(), salt.AsSpan(), hash, iterate, HashAlgorithmName.SHA1);
+        Span<byte> hashBytes = stackalloc byte[36];
+
+        for (var i = 0; i < 16; i++)
         {
-            byte[] hash = pbkdf2.GetBytes(derivedKeyLength);
-
-            byte[] hashBytes = new byte[saltLength + derivedKeyLength];
-            Buffer.BlockCopy(salt, 0, hashBytes, 0, saltLength);
-            Buffer.BlockCopy(hash, 0, hashBytes, saltLength, derivedKeyLength);
-
-            return Convert.ToBase64String(hashBytes);
+            hashBytes[i] = salt[i];
         }
 
-    }
+        for (var i = 16; i < 36; i++)
+        {
+            hashBytes[i] = hash[i - 16];
+        }
 
+        return Convert.ToBase64String(hashBytes);
+    }
 }

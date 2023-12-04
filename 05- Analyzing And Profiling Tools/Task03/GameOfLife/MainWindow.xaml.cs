@@ -6,7 +6,7 @@ namespace GameOfLife
 {
     public partial class MainWindow : Window
     {
-        private Grid mainGrid;
+        private OriginalGrid mainGrid;
         DispatcherTimer timer;   //  Generation timer
         private int genCounter;
         private AdWindow[] adWindow;
@@ -15,7 +15,7 @@ namespace GameOfLife
         public MainWindow()
         {
             InitializeComponent();
-            mainGrid = new Grid(MainCanvas);
+            mainGrid = new OriginalGrid(MainCanvas);
 
             timer = new DispatcherTimer();
             timer.Tick += OnTimer;

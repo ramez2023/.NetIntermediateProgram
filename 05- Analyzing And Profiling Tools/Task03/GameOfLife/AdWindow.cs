@@ -7,7 +7,7 @@ using System.Windows.Threading;
 
 namespace GameOfLife
 {
-    class AdWindow : Window
+    public class AdWindow : Window
     {
         private readonly DispatcherTimer adTimer;
         private int imgNmb;     // the number of the image currently shown

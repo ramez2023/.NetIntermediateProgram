@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace GameOfLife
 {
-    class Grid
+    public class Grid
     {
         private Canvas drawCanvas;
         private Random rnd;
@@ -35,7 +35,7 @@ namespace GameOfLife
             Init();
         }
 
-        private void Init()
+        public void Init()
         {
             for (int i = 0; i < SizeX; i++)
                 for (int j = 0; j < SizeY; j++)

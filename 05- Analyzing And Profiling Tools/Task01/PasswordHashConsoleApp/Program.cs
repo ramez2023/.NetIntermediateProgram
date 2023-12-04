@@ -24,22 +24,14 @@ Try to review and optimize the code to improve the performance of the method. Do
 
 */
 
+using BenchmarkDotNet.Running;
+
 namespace PasswordHashConsoleApp;
 
 internal class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
-        byte[] salt = new byte[16];
-        string passwordText = "your_password_here";
-
-        for (int i = 0; i < int.MaxValue; i++)
-        {
-            Console.WriteLine($"Count {i}");
-
-           //PasswordHashGenerator.GeneratePasswordHashUsingSaltOriginal(passwordText, salt);
-             PasswordHashGenerator.GeneratePasswordHashUsingSaltOptimized(passwordText, salt);
-        }
+        var summary = BenchmarkRunner.Run<PasswordHashBenchmark>();
     }
 }
