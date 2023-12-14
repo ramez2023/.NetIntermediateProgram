@@ -1,0 +1,30 @@
+﻿
+IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'SqlProviderTaskDb')
+BEGIN
+    CREATE DATABASE [SqlProviderTaskDb]
+END
+GO
+    USE [SqlProviderTaskDb];
+GO
+
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Person' and xtype='U')
+    CREATE TABLE Person (
+        Id int,
+        Name varchar(255),
+        Age int,
+    )
+GO
+
+
+
+INSERT INTO Person (Id, Name, Age) VALUES (1, 'Person-01', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (2, 'Person-02', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (3, 'Person-03', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (4, 'Person-04', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (5, 'Person-05', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (6, 'Person-06', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (7, 'Person-07', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (8, 'Person-08', 30);
+INSERT INTO Person (Id, Name, Age) VALUES (9, 'Person-09', 30);
+

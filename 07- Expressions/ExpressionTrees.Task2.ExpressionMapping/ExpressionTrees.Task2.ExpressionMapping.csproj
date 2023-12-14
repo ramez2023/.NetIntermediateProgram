@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExpressionTrees.Task1.ExpressionsTransformator\ExpressionTrees.Task1.ExpressionsTransformer.csproj" />
+  </ItemGroup>
+
+</Project>
