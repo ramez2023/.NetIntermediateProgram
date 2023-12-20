@@ -1,70 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Expressions.Task3.E3SQueryProvider
+namespace Expressions.Task3.E3SQueryProvider.SqlQueryProvider
 {
     public class ExpressionToSqlTranslator : ExpressionVisitor
     {
-        readonly StringBuilder _resultStringBuilder;
+        private readonly StringBuilder _whereBuilder;
+        private readonly Type _itemType;
         private string _logicalOperator = "AND";
 
 
-        public ExpressionToSqlTranslator()
+        public ExpressionToSqlTranslator(Type itemType)
         {
-            _resultStringBuilder = new StringBuilder();
+            _itemType = itemType;
+            _whereBuilder = new StringBuilder();
         }
 
         public string Translate(Expression exp)
         {
             Visit(exp);
-            return _resultStringBuilder.ToString();
+            return _whereBuilder.Length == 0
+                ? $"SELECT {GetSelectClause()} FROM {GetTableName()}"
+                : $"SELECT {GetSelectClause()} FROM {GetTableName()} WHERE {_whereBuilder}";
         }
 
         #region protected methods
 
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            switch (node.Method.Name)
+            if (node.Method.Name == "Where" && node.Method.DeclaringType == typeof(Queryable))
             {
-                case "Where":
-                    if (node.Method.DeclaringType == typeof(Queryable))
-                    {
-                        var predicate = node.Arguments[1];
-                        Visit(predicate);
-                        return node;
-                    }
-                    break;
-
-                case "Equals":
-                    Visit(node.Object);
-                    _resultStringBuilder.Append("(");
-                    Visit(node.Arguments[0]);
-                    _resultStringBuilder.Append(")");
-                    return node;
-
-                case "Contains":
-                    Visit(node.Object);
-                    _resultStringBuilder.Append("(*");
-                    Visit(node.Arguments[0]);
-                    _resultStringBuilder.Append("*)");
-                    return node;
-
-                case "StartsWith":
-                    Visit(node.Object);
-                    _resultStringBuilder.Append("(");
-                    Visit(node.Arguments[0]);
-                    _resultStringBuilder.Append("*)");
-                    return node;
-
-                case "EndsWith":
-                    Visit(node.Object);
-                    _resultStringBuilder.Append("(*");
-                    Visit(node.Arguments[0]);
-                    _resultStringBuilder.Append(")");
-                    return node;
+                var predicate = node.Arguments[1];
+                Visit(predicate);
+                return node;
             }
 
             return base.VisitMethodCall(node);
@@ -97,6 +67,11 @@ namespace Expressions.Task3.E3SQueryProvider
             return base.VisitBinary(node);
         }
 
+        #endregion
+
+
+
+        #region Helper
         private bool IsComparisonOperation(ExpressionType nodeType)
         {
             return nodeType == ExpressionType.Equal || nodeType == ExpressionType.GreaterThan || nodeType == ExpressionType.LessThan;
@@ -116,14 +91,13 @@ namespace Expressions.Task3.E3SQueryProvider
 
         private void AppendCondition(string condition)
         {
-            if (_resultStringBuilder.Length > 0)
+            if (_whereBuilder.Length > 0)
             {
-                _resultStringBuilder.Append($" {_logicalOperator} ");
+                _whereBuilder.Append($" {_logicalOperator} ");
             }
 
-            _resultStringBuilder.Append(condition);
+            _whereBuilder.Append(condition);
         }
-
 
         private string GetValue(object value)
         {
@@ -135,6 +109,15 @@ namespace Expressions.Task3.E3SQueryProvider
             };
         }
 
+        private string GetTableName()
+        {
+            return _itemType.Name;
+        }
+        private string GetSelectClause()
+        {
+            var properties = _itemType.GetProperties().Select(property => property.Name);
+            return string.Join(", ", properties);
+        }
         #endregion
     }
 }

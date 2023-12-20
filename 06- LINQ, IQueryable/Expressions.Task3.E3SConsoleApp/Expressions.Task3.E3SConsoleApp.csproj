@@ -8,14 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="SqlScript.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="SqlScript.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Expressions.Task3.E3SQueryProvider\Expressions.Task3.E3SQueryProvider.csproj" />
   </ItemGroup>
 
