@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using WEBAPI.Common.Enums;
 using WEBAPI.Infrastructure.Query.Response;
 
-namespace WEBAPI.Api.Controllers
+namespace WEBAPI.Api.Controllers.V1
 {
     [ApiVersion("1.0")]
     [ApiController]
@@ -36,7 +36,7 @@ namespace WEBAPI.Api.Controllers
             };
         }
 
-        [HttpGet("api/product/{id}")]
+        [HttpGet("api/product/{id:int:min(1)}")]
         public async Task<Response<GetProductResponseVm>> GetProductById([FromQuery] GetProductRequestVm getProductRequestVm)
         {
             var product = await _productService.GetProductAsync(getProductRequestVm);
@@ -66,7 +66,7 @@ namespace WEBAPI.Api.Controllers
             };
         }
 
-        [HttpDelete("api/product/delete/{id}")]
+        [HttpDelete("api/product/delete/{id:int:min(1)}")]
         public async Task<Response<GetProductResponseVm>> DeleteProductById([FromQuery] DeleteProductRequestVm deleteProductRequestVm)
         {
             var deleteProduct = await _productService.DeleteProductAsync(deleteProductRequestVm);

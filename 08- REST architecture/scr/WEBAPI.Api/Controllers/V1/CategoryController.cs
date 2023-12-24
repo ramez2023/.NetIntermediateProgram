@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using WEBAPI.Common.Enums;
 using WEBAPI.Infrastructure.Query.Response;
 
-namespace WEBAPI.Api.Controllers
+namespace WEBAPI.Api.Controllers.V1
 {
     [ApiVersion("1.0")]
     [ApiController]
@@ -36,7 +36,7 @@ namespace WEBAPI.Api.Controllers
             };
         }
 
-        [HttpGet("api/category/{id}")]
+        [HttpGet("api/category/{id:int:min(1)}")]
         public async Task<Response<GetCategoryResponseVm>> GetCategoryById([FromQuery] GetCategoryRequestVm getCategoryRequestVm)
         {
             var category = await _categoryService.GetCategoryAsync(getCategoryRequestVm);
@@ -66,7 +66,7 @@ namespace WEBAPI.Api.Controllers
             };
         }
 
-        [HttpDelete("api/category/delete/{id}")]
+        [HttpDelete("api/category/delete/{id:int:min(1)}")]
         public async Task<Response<GetCategoryResponseVm>> DeleteCategoryById([FromQuery] DeleteCategoryRequestVm deleteCategoryRequestVm)
         {
             var deleteCategory = await _categoryService.DeleteCategoryAsync(deleteCategoryRequestVm);
